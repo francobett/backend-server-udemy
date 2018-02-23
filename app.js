@@ -19,7 +19,12 @@
 // Importar Rutas
     var appRoutes = require('./routes/app');
     var usuarioRoutes = require('./routes/usuario');
+    var hospitalRoutes = require('./routes/hospital');
+    var medicoRoutes = require('./routes/medico');
+    var uploadRoutes = require('./routes/upload');
     var loginRoutes = require('./routes/login');
+    var busquedaRoutes = require('./routes/busqueda');
+    var imagenesRoutes = require('./routes/imagenes');
 
 // Conexión a la Base de Datos
 
@@ -27,11 +32,22 @@
         if (error) throw error; //Si hay algún error en la conexión finalizar
 
         console.log('Base de datos: ','online'.green);
-    })
+    });
+
+//Server index config: Forma de desplegar imagenes, entrando a localhost:3000/uploads
+    // var serveIndex = require('serve-index');
+    // app.use(express.static(__dirname + '/'))
+    // app.use('/uploads', serveIndex(__dirname + '/uploads'));
+
 
 //Rutas
+    app.use('/medico', medicoRoutes); 
+    app.use('/hospital', hospitalRoutes); 
     app.use('/usuario', usuarioRoutes); 
+    app.use('/upload', uploadRoutes); 
     app.use('/login', loginRoutes); 
+    app.use('/busqueda', busquedaRoutes); 
+    app.use('/img', imagenesRoutes); 
     app.use('/', appRoutes); //Cuando coincida con '/' usar el archivo de rutas 'appRoutes'
 
 // Escuchar peticiones
