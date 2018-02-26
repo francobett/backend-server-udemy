@@ -17,8 +17,8 @@ var usuarioSchema = new Schema({
     email: { type: String, required: [true, 'El correo es necesario'], unique:true },
     password: { type: String, required: [true, 'El contraseña es necesaria'] },
     img: { type: String, required: false },
-    role: { type: String, required: true, default: 'USER_ROLE', enum: rolesValidos, uppercase: true } //El uppercase:true, convierte los valores post de rol que lleguen en mayuscula
-
+    role: { type: String, required: true, default: 'USER_ROLE', enum: rolesValidos, uppercase: true }, //El uppercase:true, convierte los valores post de rol que lleguen en mayuscula
+    google:  { type: Boolean, required: true, default: false }
 });
 
 usuarioSchema.plugin( uniqueValidor, { message: '{PATH} debe de ser único'}); //{PATH} significa el campo unique que tiene el error de validacion

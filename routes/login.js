@@ -9,6 +9,126 @@ var app = express(); //Definir servidor express
 
 var Usuario = require('../models/usuario'); //Importar el modelo de usuario
 
+
+var {OAuth2Client} = require('google-auth-library'); //Importar libreria googleauth
+
+const GOOGLE_CLIENT_ID = require('../config/config').GOOGLE_CLIENT_ID; //Constantes
+const GOOGLE_SECRET = require('../config/config').GOOGLE_SECRET; //Constantes
+
+
+//=================================================================
+// Autenticación Google
+//=================================================================
+app.post('/google', (req, resp, next) =>{
+
+    var token = req.body.token ;  //Token que viene en el body de la petición
+
+    const oAuth2Client = new OAuth2Client(
+       GOOGLE_CLIENT_ID,
+       GOOGLE_SECRET
+     );
+
+     const ticket = oAuth2Client.verifyIdToken({
+       idToken: token
+       //audience: GOOGLE_CLIENT_ID
+     });
+
+     ticket.then( (data) =>{
+
+        var payload = data.getPayload();
+
+        Usuario.findOne( { email: payload.email }, ( error, usuario) => {
+
+            if(error){
+                return resp.status(500).json({
+                    ok: false, 
+                    mensaje: 'Error al buscar usuario a loguear',
+                    errors: error
+                });
+            }
+            //Si existe el usuario
+            if( usuario ){ 
+
+                if( !usuario.google ){ //SI no fue creado por google
+                    return resp.status(400).json({
+                        ok: false, 
+                        mensaje: 'Debe usar su autenticación normal'
+                    });
+                }else{ // Fue creado por google
+
+                    //Quitar contraseña
+                    usuarioGoogle.password = 'YouCantSeeIt';
+    
+                     //=================================================================
+                    // Crear token
+                    //=================================================================
+                    // Parametros sign: 1°'payload': Data a colocar en el token,
+                    // 2°'SEED'/semilla :nos permite hacer unico nuestro token
+                    // 3°: fecha expiración del token
+                    var token = jwt.sign( { usuario: usuarioGoogle }, SEED , { expiresIn: 14400 } ) //4 horas
+    
+                    resp.status(200).json({ 
+                        ok: true, 
+                        usuario: usuarioGoogle,
+                        token: token,
+                        id: usuarioGoogle.id
+                    });
+                }
+
+            //Si no existe el usuario
+            }else{
+
+                var usuarioNuevoGoogle = new Usuario();
+
+                usuarioNuevoGoogle.nombre = payload.name;
+                usuarioNuevoGoogle.email = payload.email;
+                usuarioNuevoGoogle.password = ':)';
+                usuarioNuevoGoogle.img = payload.picture;
+                usuarioNuevoGoogle.google = true; 
+
+                usuarioNuevoGoogle.save( (error, usuarioDB) => {
+
+                    if(error){
+                        return resp.status(500).json({
+                            ok: false, 
+                            mensaje: 'Error al guardar usuario de google',
+                            errors: error
+                        });
+                    }
+
+                    var token = jwt.sign( { usuario: usuarioDB }, SEED , { expiresIn: 14400 } ) //4 horas
+    
+                    resp.status(200).json({ 
+                        ok: true, 
+                        usuario: usuarioDB,
+                        token: token,
+                        id: usuarioDB.id
+                    });
+
+
+                });
+
+
+            }
+          
+        });
+
+
+     })
+     .catch( error => { //Si hay error
+        resp.status(400).json({
+            ok: false, 
+            mensaje: 'Token no válido',
+            errors: error
+        });
+     })
+
+  });
+
+
+//=================================================================
+// Autenticación normal
+//=================================================================
 app.post('/', (req,resp) => {
 
     var body = req.body;
