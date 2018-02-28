@@ -57,7 +57,7 @@ app.post('/google', (req, resp, next) =>{
                 }else{ // Fue creado por google
 
                     //Quitar contraseña
-                    usuarioGoogle.password = 'YouCantSeeIt';
+                    usuario.password = 'YouCantSeeIt';
     
                      //=================================================================
                     // Crear token
@@ -65,13 +65,13 @@ app.post('/google', (req, resp, next) =>{
                     // Parametros sign: 1°'payload': Data a colocar en el token,
                     // 2°'SEED'/semilla :nos permite hacer unico nuestro token
                     // 3°: fecha expiración del token
-                    var token = jwt.sign( { usuario: usuarioGoogle }, SEED , { expiresIn: 14400 } ) //4 horas
+                    var token = jwt.sign( { usuario: usuario }, SEED , { expiresIn: 14400 } ) //4 horas
     
                     resp.status(200).json({ 
                         ok: true, 
-                        usuario: usuarioGoogle,
+                        usuario: usuario,
                         token: token,
-                        id: usuarioGoogle.id
+                        id: usuario.id
                     });
                 }
 

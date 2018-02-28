@@ -118,7 +118,7 @@ app.put('/:id', mdAutenticacion.verificaToken , (req, resp) => {
 // ==============================================================
 // Crear nuevo usuario
 // ==============================================================
-app.post('/', mdAutenticacion.verificaToken , (req, resp) =>{ //Como segundo parametro se mandan los middleware y validaciones para esta petición
+app.post('/', (req, resp) =>{ //Como segundo parametro se mandan los middleware y validaciones para esta petición
 
     var body = req.body; //Solo funciona con la libreria de BodyParser
 

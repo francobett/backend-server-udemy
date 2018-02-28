@@ -9,12 +9,20 @@
     var app = express(); //Definir servidor express
     var colors = require('colors'); // color.js https://github.com/marak/colors.js/
 
-    //BodyParser
-        // parse application/x-www-form-urlencoded
-        app.use(bodyParser.urlencoded({ extended: false }))
+// CORS
+    app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*"); //Cualquier lugar puede hacer las peticiones
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); //Tipo de Origenes
+        res.header("Access-Control-Allow-Methods","POST, GET, PUT, DELETE, OPTIONS"); //Permitir estos metodos
+        next();
+    });
 
-        // parse application/json
-        app.use(bodyParser.json())
+//BodyParser
+    // parse application/x-www-form-urlencoded
+    app.use(bodyParser.urlencoded({ extended: false }))
+
+    // parse application/json
+    app.use(bodyParser.json())
 
 // Importar Rutas
     var appRoutes = require('./routes/app');
