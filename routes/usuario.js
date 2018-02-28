@@ -81,14 +81,15 @@ app.put('/:id', mdAutenticacion.verificaToken , (req, resp) => {
 
         //Actualizar Data
 
-        // usuario.nombre = body.nombre;
-        // usuario.email = body.email;
-        // usuario.role = body.role;
+        usuario.nombre = body.nombre;
+        usuario.email = body.email;
+        usuario.role = body.role;
 
-        // En vez de asignar uno por uno, se puede hacer de la siguiente forma
-        Object.keys(req.body).forEach(key => {
-            usuario[key] = req.body[key];
-            });
+        // En vez de asignar uno por uno, se puede hacer de la siguiente forma.
+        // No lo hacemos, pq actualizaria la contraseña también
+        // Object.keys(req.body).forEach(key => {
+        //     usuario[key] = req.body[key];
+        //     });
 
 
         usuario.save( (error, usuarioActualizado ) => {
