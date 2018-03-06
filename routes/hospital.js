@@ -15,34 +15,96 @@ app.get('/', (req, resp) =>{ //resp -> response: Respuesta del servidor a cualqu
 
     var desde = req.query.desde || 0;  //Si no tiene valor, es vacio. Al ser req.query, viene la información en la URL x.com/hospital?desde=X
     desde = Number(desde);  
+    var todos = req.query.todos || false; //Si no tiene valor, es falso, y se buscan de a 5. Si es true se buscan todos los hospitales
+    
+    //Se devuelven todos los hospitales
+    if(todos === 'true'){
+        Hospital.find({}) //Campos a devolver
+                    .populate('usuario', 'nombre email') //Populate para traer el objeto usuario relacionado al hospital, y los campos nombre y email
+                    .exec( (error, hospitales) =>{ //Retorno del Query
+                        if (error){
+                            return resp.status(500).json({
+                                ok: false, 
+                                mensaje: 'Error cargando hospitales',
+                                errors: error
+                            });
+                        }
 
+                        Hospital.count( {}, (error, contador )=> {
 
-    Hospital.find({}) //Campos a devolver
-                .populate('usuario', 'nombre email') //Populate para traer el objeto usuario relacionado al hospital, y los campos nombre y email
-                .skip(desde) //Empezar la busqueda desde el numero que tiene la variable 'desde'
-                .limit(5) //Solo mostrar 5 hospitales
-                .exec( (error, hospitales) =>{ //Retorno del Query
-                    if (error){
-                        return resp.status(500).json({
-                            ok: false, 
-                            mensaje: 'Error cargando hospitales',
-                            errors: error
+                            resp.status(200).json({ //Devuelve los hospitales si sale todo bien
+                                ok: true, // Indica si todo esta bien (true), o si tiene algun error  (false)
+                                hospitales: hospitales,
+                                total: contador,
+                                todos: todos
+                            });
                         });
-                    }
 
-                    Hospital.count( {}, (error, contador )=> {
+        })
+    //Se devuelven solo 5, y a partir del desde
+    }else{
 
-                        resp.status(200).json({ //Devuelve los hospitales si sale todo bien
-                            ok: true, // Indica si todo esta bien (true), o si tiene algun error  (false)
-                            hospitales: hospitales,
-                            total: contador
+        Hospital.find({}) //Campos a devolver
+                    .populate('usuario', 'nombre email') //Populate para traer el objeto usuario relacionado al hospital, y los campos nombre y email
+                    .skip(desde) //Empezar la busqueda desde el numero que tiene la variable 'desde'
+                    .limit(5) //Solo mostrar 5 hospitales
+                    .exec( (error, hospitales) =>{ //Retorno del Query
+                        if (error){
+                            return resp.status(500).json({
+                                ok: false, 
+                                mensaje: 'Error cargando hospitales',
+                                errors: error
+                            });
+                        }
+
+                        Hospital.count( {}, (error, contador )=> {
+
+                            resp.status(200).json({ //Devuelve los hospitales si sale todo bien
+                                ok: true, // Indica si todo esta bien (true), o si tiene algun error  (false)
+                                hospitales: hospitales,
+                                total: contador,
+                                todos: todos
+                            });
                         });
-                    });
 
-    })
+        })
+
+    }
 
    
 
+});
+
+// ==========================================
+// Obtener Hospital por ID
+// ==========================================
+app.get('/:id', (req, res) => {
+    var id = req.params.id;
+    Hospital.findById(id)
+        .populate('usuario', 'nombre img email')
+        .exec((err, hospital) => {
+            
+            if (err) {
+                return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al buscar hospital',
+                errors: err
+                });
+            }
+
+            if (!hospital) {
+                return res.status(400).json({
+                ok: false,
+                mensaje: 'El hospital con el id ' + id + 'no existe',
+                errors: { message: 'No existe un hospital con ese ID' }
+                });
+            }
+
+            res.status(200).json({
+            ok: true,
+            hospital: hospital
+            });
+        })
 });
 
 // ==============================================================

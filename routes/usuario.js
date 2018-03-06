@@ -20,7 +20,7 @@ app.get('/', (req, resp) =>{ //resp -> response: Respuesta del servidor a cualqu
 
 
     Usuario.find({}, //Query. En este caso no hay query, devuelve todos los usuarios
-                'nombre email img role') //Campos a devolver
+                'nombre email img role google') //Campos a devolver
                 .skip(desde) //Empezar la busqueda desde el numero que tiene la variable 'desde'
                 .limit(5) //Solo mostrar 5 usuarios
                 .exec( (error, usuarios) =>{ //Retorno del Query
