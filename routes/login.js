@@ -71,7 +71,8 @@ app.post('/google', (req, resp, next) =>{
                         ok: true, 
                         usuario: usuario,
                         token: token,
-                        id: usuario.id
+                        id: usuario.id,
+                        menu: obtenerMenu(usuario.role) //Obtener el menu segun el rol
                     });
                 }
 
@@ -102,7 +103,8 @@ app.post('/google', (req, resp, next) =>{
                         ok: true, 
                         usuario: usuarioDB,
                         token: token,
-                        id: usuarioDB.id
+                        id: usuarioDB.id,
+                        menu: obtenerMenu(usuario.role) //Obtener el menu segun el rol
                     });
 
 
@@ -123,7 +125,7 @@ app.post('/google', (req, resp, next) =>{
         });
      })
 
-  });
+});
 
 
 //=================================================================
@@ -175,7 +177,8 @@ app.post('/', (req,resp) => {
             ok: true, 
             usuario: usuarioLogeado,
             token: token,
-            id: usuarioLogeado.id
+            id: usuarioLogeado.id,
+            menu: obtenerMenu(usuarioLogeado.role) //Obtener el menu segun el rol
         });
 
     });
@@ -183,6 +186,40 @@ app.post('/', (req,resp) => {
     
 
 });
+
+
+function obtenerMenu( ROLE ){
+
+    var menu = [
+        {
+          titulo: 'Principal',
+          icono: 'mdi mdi-gauge',
+          submenu: [
+            { titulo: 'Dashboard' , url: '/dashboard'},
+            { titulo: 'ProgressBar' , url: '/progress'},
+            { titulo: 'Gráficas' , url: '/graficas1'},
+            { titulo: 'Promesas' , url: '/promesas'},
+            { titulo: 'Rxjs' , url: '/rxjs'}
+          ]
+        },
+        {
+          titulo: 'Mantenimientos',
+          icono: 'mdi mdi-folder-lock-open',
+          submenu:[
+            // { titulo: 'Usuarios', url:'/usuarios'},
+            { titulo: 'Hospitales', url:'/hospitales'},
+            { titulo: 'Medicos', url:'/medicos'}
+          ]
+        }
+      ];
+      
+      //Si es administrador, agregar la posibilidad del menu de usuarios
+      if ( ROLE === 'ADMIN_ROLE'){
+          menu[1].submenu.unshift({ titulo: 'Usuarios', url:'/usuarios'});
+      }
+    
+    return menu;
+}
 
 
 //Exportar login.js

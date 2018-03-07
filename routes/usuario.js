@@ -54,7 +54,7 @@ app.get('/', (req, resp) =>{ //resp -> response: Respuesta del servidor a cualqu
 // Actualizar usuario
 // ==============================================================
 
-app.put('/:id', mdAutenticacion.verificaToken , (req, resp) => {
+app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE_o_MismoUsuario ] , (req, resp) => {
 
     var id = req.params.id; //Poner en var id el id que viene por la ruta
     var body = req.body;
@@ -154,7 +154,7 @@ app.post('/', (req, resp) =>{ //Como segundo parametro se mandan los middleware 
 //=================================================================
 // Eliminar Usuario por el id
 //=================================================================
-app.delete('/:id', mdAutenticacion.verificaToken , (req, resp) =>{
+app.delete('/:id',[mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_ROLE] , (req, resp) =>{
 
     var id = req.params.id;
 
