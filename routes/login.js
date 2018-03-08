@@ -15,6 +15,28 @@ var {OAuth2Client} = require('google-auth-library'); //Importar libreria googlea
 const GOOGLE_CLIENT_ID = require('../config/config').GOOGLE_CLIENT_ID; //Constantes
 const GOOGLE_SECRET = require('../config/config').GOOGLE_SECRET; //Constantes
 
+var mdAutenticacion = require('../middlewares/autenticacion');
+
+//=================================================================
+// Renovar Token
+//=================================================================
+app.get('/renuevatoken', mdAutenticacion.verificaToken , ( req, resp ) =>{
+
+    //=================================================================
+    // Crear token
+    //=================================================================
+    // Parametros sign: 1°'payload': Data a colocar en el token,
+    // 2°'SEED'/semilla :nos permite hacer unico nuestro token
+    // 3°: fecha expiración del token
+    var token = jwt.sign( { usuario: req.usuario }, SEED , { expiresIn: 14400 } ) //4 horas
+
+
+   resp.status(200).json({
+        ok: true,
+        token: token
+    });
+
+});
 
 //=================================================================
 // Autenticación Google
@@ -59,7 +81,7 @@ app.post('/google', (req, resp, next) =>{
                     //Quitar contraseña
                     usuario.password = 'YouCantSeeIt';
     
-                     //=================================================================
+                    //=================================================================
                     // Crear token
                     //=================================================================
                     // Parametros sign: 1°'payload': Data a colocar en el token,
